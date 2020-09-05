@@ -1,0 +1,86 @@
+server:
+  port: 80
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.web.HttpLogging: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    com.netflix: DEBUG
+
+info:
+  app:
+    name: ${spring.application.name}
+
+spring:
+  application:
+    name: sharebazar-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: investment-account
+          uri: lb://investment-account
+          predicates:
+            - Path=/investment/**
+          filters:
+            - StripPrefix=1
+        #            - TokenRelay=
+        - id: registry
+          uri: lb://sharebazar-registry
+          predicates:
+            - Path=/registry/**
+          filters:
+            - StripPrefix=1
+        - id: eureka
+          uri: lb://sharebazar-registry
+          predicates:
+            - Path=/eureka/**
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          gateway:
+#            provider: uaa
+#            client-id: gateway
+#            client-secret: secret
+#            authorization-grant-type: authorization_code
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            scope: openid,profile,email,resource.read
+#        provider:
+#          uaa:
+#            authorization-uri: http://localhost:8090/uaa/oauth/authorize
+#            token-uri: http://localhost:8090/uaa/oauth/token
+#            user-info-uri: http://localhost:8090/uaa/userinfo
+#            user-name-attribute: sub
+#            jwk-set-uri: http://localhost:8090/uaa/token_keys
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://sharebazar_registry:8761/eureka}
+    healthcheck:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - mappings
+          - env
+          - health
+          - info
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: resource
+#          uri: http://resource:9000
+#          predicates:
+#            - Path=/resource
+#          filters:
+#            - TokenRelay=
+#            - RemoveRequestHeader=Cookie
