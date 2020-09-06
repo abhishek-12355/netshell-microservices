@@ -17,25 +17,18 @@ info:
 
 spring:
   application:
-    name: sharebazar-gateway
+    name: ns-gateway
   cloud:
     gateway:
       routes:
-        - id: investment-account
-          uri: lb://investment-account
-          predicates:
-            - Path=/investment/**
-          filters:
-            - StripPrefix=1
-        #            - TokenRelay=
         - id: registry
-          uri: lb://sharebazar-registry
+          uri: lb://ns-registry
           predicates:
             - Path=/registry/**
           filters:
             - StripPrefix=1
         - id: eureka
-          uri: lb://sharebazar-registry
+          uri: lb://ns-registry
           predicates:
             - Path=/eureka/**
 #  security:
@@ -61,7 +54,7 @@ eureka:
   client:
     registerWithEureka: true
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER:http://sharebazar_registry:8761/eureka}
+      defaultZone: ${EUREKA_SERVER:http://nsregistry:8761/eureka}
     healthcheck:
       enabled: true
 
@@ -74,13 +67,3 @@ management:
           - env
           - health
           - info
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: resource
-#          uri: http://resource:9000
-#          predicates:
-#            - Path=/resource
-#          filters:
-#            - TokenRelay=
-#            - RemoveRequestHeader=Cookie
